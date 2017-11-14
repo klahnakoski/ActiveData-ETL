@@ -13,15 +13,16 @@ import unittest
 
 from activedata_etl.transforms import cov_to_es
 from activedata_etl.transforms.jscov_to_es import process_jscov_artifact
+from mo_dots import Null, Data
 from pyLibrary.aws.s3 import PublicBucket
 from test_gcov import Destination
 
 
 class TestJsdov(unittest.TestCase):
     def test_one_url(self):
-        key="tc.1051816"
-        url="https://queue.taskcluster.net/v1/task/PNzAZrN7SUeKMK0_-wZr0Q/runs/0/artifacts/public/test_info//code-coverage-gcda.zip"
-        destination = Destination("results/ccov/lcov_parsing_result.json.gz")
+        key=Null
+        url="http://queue.taskcluster.net/v1/task/GKlTCjJ1QMSgoTQbqAhrbg/artifacts/public/test_info//jsdcov_artifacts.zip"
+        destination = Destination("results/jsdcov/lcov_parsing_result.json.gz")
 
         process_jscov_artifact(
             source_key=key,
@@ -33,13 +34,13 @@ class TestJsdov(unittest.TestCase):
             please_stop=Null
         )
 
-    def test_etl_block(self):
-        source = Data(read_lines=lambda: PublicBucket("https://s3-us-west-2.amazonaws.com/active-data-task-cluster-normalized").read_lines("tc.1051816:105180763.json.gz"))
-        destination = Destination("results/ccov/lcov_output.gz")
-
-        cov_to_es.process(
-            "tc.1051816",
-            source=source,
-            destination=destination,
-            resources=Null,
-        )
+    # def test_etl_block(self):
+    #     source = Data(read_lines=lambda: PublicBucket("https://s3-us-west-2.amazonaws.com/active-data-task-cluster-normalized").read_lines("tc.1051816:105180763.json.gz"))
+    #     destination = Destination("results/ccov/lcov_output.gz")
+    #
+    #     cov_to_es.process(
+    #         "tc.1051816",
+    #         source=source,
+    #         destination=destination,
+    #         resources=Null,
+    #     )

@@ -13,10 +13,13 @@ from activedata_etl import etl2key
 from mo_dots import wrap, unwraplist, set_default
 from mo_json import stream, value2json
 from mo_logs import Log, machine_metadata
+from mo_files import File, TempDirectory
+from zipfile import ZipFile
 
 from mo_times.dates import Date
 from mo_times.timer import Timer
 from pyLibrary.env import http
+from pyLibrary.env.big_data import ibytes2ilines
 
 STATUS_URL = "https://queue.taskcluster.net/v1/task/{{task_id}}"
 ARTIFACTS_URL = "https://queue.taskcluster.net/v1/task/{{task_id}}/artifacts"
@@ -32,42 +35,57 @@ def process_jscov_artifact(source_key, resources, destination, task_cluster_reco
             count += 1
 
     def generator():
-        response_stream = http.get(artifact.url).raw
-        with Timer("Processing {{jscov_file}}", param={"jscov_file": artifact.url}):
-            counter = count_generator().next
+        with ZipFile(jsdcov_file) as zipped:
+            for num, zip_name in enumerate(zipped.namelist()):
+                json_stream = ibytes2ilines(zipped.open(zip_name))
+                counter = count_generator().next
+                for source_file_index, obj in enumerate(stream.parse(json_stream, '.', ['.'])):
+                    if please_stop:
+                        Log.error("Shutdown detected. Stopping job ETL.")
 
-            for source_file_index, obj in enumerate(stream.parse(response_stream, [], ["."])):
-                if please_stop:
-                    Log.error("Shutdown detected. Stopping job ETL.")
+                    if source_file_index == 0:
+                        # this is not a jscov object but an object containing the version metadata
+                        # TODO: this metadata should not be here
+                        # TODO: this version info is not used right now. Make use of it later.
+                        jscov_format_version = obj.get("version")
+                        continue
 
-                if source_file_index == 0:
-                    # this is not a jscov object but an object containing the version metadata
-                    # TODO: this metadata should not be here
-                    # TODO: this version info is not used right now. Make use of it later.
-                    jscov_format_version = obj.get("version")
-                    continue
-
-                try:
-                    for d in process_source_file(
-                        artifact_etl,
-                        counter,
-                        obj,
-                        task_cluster_record
-                    ):
-                        yield d
-                except Exception as e:
-                    Log.warning(
-                        "Error processing test {{test_url}} and source file {{source}} while processing {{key}}",
-                        key=source_key,
-                        test_url=obj.get("testUrl"),
-                        source=obj.get("sourceFile"),
-                        cause=e
-                    )
+                    try:
+                        for d in process_source_file(
+                            artifact_etl,
+                            counter,
+                            obj,
+                            task_cluster_record
+                        ):
+                            yield value2json(d)
+                    except Exception as e:
+                        Log.warning(
+                            "Error processing test {{test_url}} and source file {{source}} while processing {{key}}",
+                            key=source_key,
+                            test_url=obj.get("testUrl"),
+                            source=obj.get("sourceFile"),
+                            cause=e
+                        )
 
     key = etl2key(artifact_etl)
-    destination.write_lines(key, (value2json(d) for d in generator()))
-    keys = [key]
-    return keys
+    with TempDirectory() as tmpdir:
+        jsdcov_file = File.new_instance(tmpdir, "jsdcov.zip").abspath
+        with Timer("Downloading {{url}}", param={"url": artifact.url}):
+            download_file(artifact.url, jsdcov_file)
+        with Timer("Processing JSDCov for key {{key}}", param={"key": key}):
+            destination.write_lines(key, generator())
+        keys = [key]
+        return keys
+
+
+def download_file(url, destination):
+    tempfile = file(destination, "w+b")
+    stream = http.get(url).raw
+    try:
+        for b in iter(lambda: stream.read(8192), b""):
+            tempfile.write(b)
+    finally:
+        stream.close()
 
 
 def process_source_file(parent_etl, count, obj, task_cluster_record):
