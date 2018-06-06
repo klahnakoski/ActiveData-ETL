@@ -38,7 +38,7 @@ def tuid_batches(source_key, task_cluster_record, resources, iterator, path="fil
 
             with Timer("markup sources for {{num}} files", {"num": len(filenames)}):
                 # WHAT DO WE HAVE
-                found = resources.tuid_mapper.get_tuids(revision, filenames)
+                found = resources.tuid_mapper.get_tuids(revision, filenames, branch=task_cluster_record.repo.branch.name)
                 if found == None:
                     return  # THIS IS A FAILURE STATE, AND A WARNING HAS ALREADY BEEN RAISED, DO NOTHING
 
