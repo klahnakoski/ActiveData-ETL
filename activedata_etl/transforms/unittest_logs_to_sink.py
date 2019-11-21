@@ -202,12 +202,14 @@ class LogSummary(object):
         self.start_time = None
         self.end_time = None
         self.tests = {}
+        self.tests_by_group = {}
         self.logs = {}
         self.stats = Data()
 
     def suite_start(self, log):
         self.suite_name = log.name
         self.start_time = log.time
+        self.tests_by_group = log.tests
         for k, v in log.items():
             if k in KNOWN_SUITE_PROPERTIES:
                 k = fix_suite_property_name(k)
@@ -222,10 +224,21 @@ class LogSummary(object):
         if isinstance(log.test, list):
             log.test = " ".join(log.test)
         test = Data(
+            group=Null,
             test=log.test,
-            start_time=log.time
+            start_time=log.time,
         )
-        for k,v in log.items():
+
+        # Figure out which group (aka manifest) contains this test.
+        for group, tests in self.tests_by_group:
+            if group.lower() == 'default':
+                continue
+
+            if log.test in tests:
+                test['group'] = group
+                break
+
+        for k, v in log.items():
             if k in KNOWN_TEST_PROPERTIES:
                 if v != None and v != "":
                     test[k] = v
