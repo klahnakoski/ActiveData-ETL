@@ -264,7 +264,7 @@ def process_text_log(all_log_lines, from_url, source_key):
     Buildbot logs:
 
         builder: ...
-        slave: ...
+        subordinate: ...
         starttime: ...
         results: ...
         buildid: ...
@@ -314,7 +314,7 @@ def process_text_log(all_log_lines, from_url, source_key):
 
         if process_head:
             # builder: mozilla-inbound_ubuntu32_vm_test-mochitest-e10s-browser-chrome-3
-            # slave: tst-linux32-spot-149
+            # subordinate: tst-linux32-spot-149
             # starttime: 1443701997.36
             # results: success (0)
             # buildid: 20151001042128
@@ -638,7 +638,7 @@ class BuilderLines(object):
 
         try:
             parts = list(map(text.strip, line[10:-10].split("(")))
-            if parts[0].startswith("master_lag:"):
+            if parts[0].startswith("main_lag:"):
                 return None
             if parts[0] == "Skipped":
                 # NOT THE REGULAR PATTERN
@@ -700,7 +700,7 @@ def parse_builder_message(message, next_line):
         parts = message.split(" ")[1:]
         message = "mock-install"
     elif message.startswith("python "):
-        # python c:/builds/moz2_slave/rel-m-beta-w32_bld-00000000000/build/build/pymake/make.py partial mar
+        # python c:/builds/moz2_subordinate/rel-m-beta-w32_bld-00000000000/build/build/pymake/make.py partial mar
         message = message.split(" ")[1].split("/")[-1]
         parts = None
     elif message.startswith("'/tools/buildbot/bin/python "):
@@ -711,11 +711,11 @@ def parse_builder_message(message, next_line):
         message = message.split(" ")[1].split("/")[-1]
         parts = None
     elif message.startswith("'sh "):
-        # 'sh c:/builds/moz2_slave/tb-c-esr38-w32-000000000000000/tools/scripts/tooltool/tooltool_wrapper.sh ...'
+        # 'sh c:/builds/moz2_subordinate/tb-c-esr38-w32-000000000000000/tools/scripts/tooltool/tooltool_wrapper.sh ...'
         message = message.split(" ")[1].split("/")[-1]
         parts = None
     elif message.startswith("'perl "):
-        # 'sh c:/builds/moz2_slave/tb-c-esr38-w32-000000000000000/tools/scripts/tooltool/tooltool_wrapper.sh ...'
+        # 'sh c:/builds/moz2_subordinate/tb-c-esr38-w32-000000000000000/tools/scripts/tooltool/tooltool_wrapper.sh ...'
         message = message.split(" ")[1].split("/")[-1]
         parts = None
     elif message.startswith("'c:/mozilla-build/python27/python -u "):

@@ -655,7 +655,7 @@ def _normalize_where(where, schema=None):
     return jx_expression(where, schema=schema)
 
 
-def _map_term_using_schema(master, path, term, schema_edges):
+def _map_term_using_schema(main, path, term, schema_edges):
     """
     IF THE WHERE CLAUSE REFERS TO FIELDS IN THE SCHEMA, THEN EXPAND THEM
     """
@@ -709,7 +709,7 @@ def _map_term_using_schema(master, path, term, schema_edges):
             else:
                 Log.error("not expected")
         elif is_data(v):
-            sub = _map_term_using_schema(master, path + [k], v, schema_edges[k])
+            sub = _map_term_using_schema(main, path + [k], v, schema_edges[k])
             output.append(sub)
             continue
 
@@ -717,16 +717,16 @@ def _map_term_using_schema(master, path, term, schema_edges):
     return {"and": output}
 
 
-def _where_terms(master, where, schema):
+def _where_terms(main, where, schema):
     """
     USE THE SCHEMA TO CONVERT DIMENSION NAMES TO ES FILTERS
-    master - TOP LEVEL WHERE (FOR PLACING NESTED FILTERS)
+    main - TOP LEVEL WHERE (FOR PLACING NESTED FILTERS)
     """
     if is_data(where):
         if where.term:
             # MAP TERM
             try:
-                output = _map_term_using_schema(master, [], where.term, schema.edges)
+                output = _map_term_using_schema(main, [], where.term, schema.edges)
                 return output
             except Exception as e:
                 Log.error("programmer problem?", e)
@@ -764,11 +764,11 @@ def _where_terms(master, where, schema):
                         output.append({"or": [domain.getPartByKey(vv).esfilter for vv in v]})
             return {"and": output}
         elif where["or"]:
-            return {"or": [unwrap(_where_terms(master, vv, schema)) for vv in where["or"]]}
+            return {"or": [unwrap(_where_terms(main, vv, schema)) for vv in where["or"]]}
         elif where["and"]:
-            return {"and": [unwrap(_where_terms(master, vv, schema)) for vv in where["and"]]}
+            return {"and": [unwrap(_where_terms(main, vv, schema)) for vv in where["and"]]}
         elif where["not"]:
-            return {"not": unwrap(_where_terms(master, where["not"], schema))}
+            return {"not": unwrap(_where_terms(main, where["not"], schema))}
     return where
 
 

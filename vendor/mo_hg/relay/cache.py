@@ -56,7 +56,7 @@ class Cache(object):
         self.inbound_rate = RateLogger("Inbound")
         self.outbound_rate = RateLogger("hg.mo")
 
-        if not self.db.query("SELECT name FROM sqlite_master WHERE type='table'").data:
+        if not self.db.query("SELECT name FROM sqlite_main WHERE type='table'").data:
             with self.db.transaction() as t:
                 t.execute(
                     "CREATE TABLE cache ("

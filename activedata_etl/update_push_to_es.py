@@ -121,7 +121,7 @@ def _upgrade_elasticsearch(config, instance, please_stop):
             with TempFile() as tempfile:
                 conn.get("/usr/local/elasticsearch/config/elasticsearch.yml", tempfile)
                 # ENSURE CONFIG EXPECTS TWO MASTERS
-                tempfile.write(tempfile.read().replace("discovery.zen.minimum_master_nodes: 1", "discovery.zen.minimum_master_nodes: 2"))
+                tempfile.write(tempfile.read().replace("discovery.zen.minimum_main_nodes: 1", "discovery.zen.minimum_main_nodes: 2"))
                 conn.put(tempfile, "/usr/local/elasticsearch/config/elasticsearch.yml")
             conn.run("cp /usr/local/elasticsearch/config/* ~/temp")
 

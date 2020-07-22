@@ -25,7 +25,7 @@ ZERO_DAY = Date("1 jan 2015")
 
 
 def make_db(db):
-    result = db.query("SELECT name FROM sqlite_master WHERE type='table' AND name=" + db.quote_value("content"))
+    result = db.query("SELECT name FROM sqlite_main WHERE type='table' AND name=" + db.quote_value("content"))
 
     if result.data:
         return

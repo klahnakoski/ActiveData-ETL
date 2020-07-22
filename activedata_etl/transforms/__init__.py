@@ -72,7 +72,7 @@ NOT_STRUCTURED_LOGS = [
     "/log_raw.log",
     "/localconfig.json",
     ".mar",
-    "/master.tar.gz",
+    "/main.tar.gz",
     "/mar.exe",
     "/manifest.json",
     "/mbsdiff.exe",

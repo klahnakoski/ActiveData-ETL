@@ -1404,7 +1404,7 @@ def consume(props, key):
 UNKNOWN_BRANCHES = [
     "android-components",
     "ci-taskgraph",
-    "servo-master",
+    "servo-main",
     "servo-try",
     "servo-prs",
     "fxapom",

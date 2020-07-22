@@ -56,7 +56,7 @@ class TUIDService:
             self.hg_cache = HgMozillaOrg(kwargs=self.config.hg_cache, use_cache=True) if self.config.hg_cache else Null
             self.hg_url = URL(hg.url)
 
-            if not self.conn.get_one("SELECT name FROM sqlite_master WHERE type='table';"):
+            if not self.conn.get_one("SELECT name FROM sqlite_main WHERE type='table';"):
                 self.init_db()
 
             self.locker = Lock()

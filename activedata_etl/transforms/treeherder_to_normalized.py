@@ -144,8 +144,8 @@ def normalize(source_key, resources, raw_treeherder, new_treeherder):
         "buildbot",
         "fx-test-jenkins",
         "fx-test-jenkins-dev",
-        "qa-master",
-        "qa-preprod-master",
+        "qa-main",
+        "qa-preprod-main",
     ]:
         consume(raw_job, "signature.build_system_type")
     else:
@@ -427,14 +427,14 @@ KNOWN_VALUES = [
 NON_HG_BRANCHES = [
     "android-components",
     'ci-taskgraph',
-    "bmo-master",
+    "bmo-main",
     "fenix",
     'fxapom',
     "go-bouncer",
     "mozillians-tests",
     'reference-browser',
     "servo-auto",
-    "servo-master",
+    "servo-main",
     'servo-prs',
     "servo-try",
     "snippets-service",

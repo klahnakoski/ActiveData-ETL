@@ -38,7 +38,7 @@ class TuidClient(object):
 
         self.db = Sqlite(filename=coalesce(db.filename, "tuid_client.sqlite"), upgrade=False, kwargs=db)
 
-        if not self.db.query("SELECT name FROM sqlite_master WHERE type='table';").data:
+        if not self.db.query("SELECT name FROM sqlite_main WHERE type='table';").data:
             with self.db.transaction() as transaction:
                 self._setup(transaction)
 

@@ -80,7 +80,7 @@ def process(source_key, source, dest_bucket, resources, please_stop=None):
 
                 verify_equal(data, "build.revision", "action.revision", from_url=pulse_record.payload.logurl, from_key=source_key)
                 verify_equal(data, "build.id", "action.buildid", from_url=pulse_record.payload.logurl, from_key=source_key)
-                verify_equal(data, "run.machine.name", "action.slave", from_url=pulse_record.payload.logurl, from_key=source_key)
+                verify_equal(data, "run.machine.name", "action.subordinate", from_url=pulse_record.payload.logurl, from_key=source_key)
 
                 output.append(data)
                 Log.note("Found builder record for id={{id}}", id=etl2key(data.etl))

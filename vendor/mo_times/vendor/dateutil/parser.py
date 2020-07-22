@@ -23,7 +23,7 @@ __all__ = ["parse", "parserinfo"]
 # http://www.cl.cam.ac.uk/~mgk25/iso-time.html
 # http://www.iso.ch/iso/en/prods-services/popstds/datesandtime.html
 # http://www.w3.org/TR/NOTE-datetime
-# http://ringmaster.arc.nasa.gov/tools/time_formats.html
+# http://ringmain.arc.nasa.gov/tools/time_formats.html
 # http://search.cpan.org/author/MUIR/Time-modules-2003.0211/lib/Time/ParseDate.pm
 # http://stein.cshl.org/jade/distrib/docs/java.text.SimpleDateFormat.html
 

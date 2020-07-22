@@ -128,7 +128,7 @@ def process(source_key, source, dest_bucket, resources, please_stop=None):
                 verify_equal(data, "build.revision", "action.revision", url, from_key=source_key)
                 verify_equal(data, "build.id", "action.buildid", url, from_key=source_key)
                 verify_equal(data, "run.key", "action.builder", warning=False, from_url=url, from_key=source_key)
-                verify_equal(data, "run.machine.name", "action.slave", from_url=url, from_key=source_key)
+                verify_equal(data, "run.machine.name", "action.subordinate", from_url=url, from_key=source_key)
 
                 output.append(elasticsearch.scrub(data))
                 Log.note("Found builder record for id={{id}}", id=etl2key(data.etl))
