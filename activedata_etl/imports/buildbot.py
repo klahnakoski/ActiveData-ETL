@@ -147,7 +147,7 @@ class BuildbotTranslator(object):
         output.run.logurl = coalesce(consume(props, "log_url"), consume(props, "logurl"))
         output.build.release = coalesce(raw_release, consume(props, "en_revision"), output.run.script.revision)
         output.run.machine.aws_id = consume(props, "aws_instance_id")
-        output.run.machine.name = coalesce(consume(props, "slavename"), consume(props, "slave"), output.run.machine.aws_id)
+        output.run.machine.name = coalesce(consume(props, "subordinatename"), consume(props, "subordinate"), output.run.machine.aws_id)
         split_name = output.run.machine.name.split("-")
         if is_integer(split_name[-1]):
             # EXAMPLES
@@ -458,9 +458,9 @@ known_properties = {
     "builddir",
     "comments",
     "got_revision",
-    "master",
+    "main",
     "scheduler",
-    "slavebuilddir",
+    "subordinatebuilddir",
     "stage_platform",
     "appName",
     "basedir",

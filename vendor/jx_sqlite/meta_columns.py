@@ -72,7 +72,7 @@ class ColumnList(jx_base.Table, jx_base.Container):
     def _load_from_database(self):
         # FIND ALL TABLES
         result = self.db.query(sql_query({
-            "from": "sqlite_master",
+            "from": "sqlite_main",
             "where": {"eq": {"type": "table"}},
             "orderby": "name"
         }))
